@@ -1,2 +1,6 @@
 *.o
 *.d
+wl_*.c
+wl_*.h
+xdg_*.c
+xdg_*.h
