@@ -10,7 +10,7 @@ WAYLAND_src_files:=wl_compositor.c wl_data_offer.c wl_data_source.c wl_data_devi
 XDG_SHELL_xml_file:=/usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml
 XDG_SHELL_src_files:=xdg_wm_base.c xdg_surface.c xdg_toplevel.c xdg_popup.c
 
-$(TARGET)_src_files:=main.c context.c xdg-shell-protocol.c $(WAYLAND_src_files) $(XDG_SHELL_src_files)
+$(TARGET)_src_files:=main.c context.c surface.c seat.c xdg-shell-protocol.c $(WAYLAND_src_files) $(XDG_SHELL_src_files)
 $(TARGET)_cflags:=$(shell pkg-config --cflags $(PKG_CONFIG_PACKAGES))
 $(TARGET)_ldflags:=$(shell pkg-config --libs $(PKG_CONFIG_PACKAGES))
 
