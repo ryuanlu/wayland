@@ -6,18 +6,17 @@
 #include "xdg_toplevel.h"
 #include "xdg_popup.h"
 #include "surface.h"
-#include "context.h"
+#include "client.h"
 
 
 static void create_surface(struct wl_client* client, struct wl_resource* resource, uint32_t id)
 {
 	struct wl_compositor_interface** wl_compositor_impl = wl_resource_get_user_data(resource);
 	struct surface* surface = calloc(sizeof(struct surface), 1);
-	struct context* context = wl_container_of(wl_compositor_impl, context, wl_compositor_impl);
-	surface->wl_surface_impl = &context->wayland_impl.wl_surface_impl;
+	struct client* new_client = wl_container_of(wl_compositor_impl, new_client, wl_compositor_impl);
+	surface->wl_surface_impl = &new_client->context->wayland_impl.wl_surface_impl;
 	surface->wl_surface = create_wl_surface(client, &surface->wl_surface_impl, wl_surface_interface.version, id);
-
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
+	fprintf(stderr, "New surface: %p\n", surface->wl_surface);
 }
 
 static void get_xdg_surface(struct wl_client* client, struct wl_resource* resource, uint32_t id, struct wl_resource* wl_surface)
@@ -25,12 +24,12 @@ static void get_xdg_surface(struct wl_client* client, struct wl_resource* resour
 	struct xdg_wm_base_interface** xdg_wm_base_impl = wl_resource_get_user_data(resource);
 	struct wl_surface_interface** wl_surface_impl = wl_resource_get_user_data(wl_surface);
 	struct surface* surface = wl_container_of(wl_surface_impl, surface, wl_surface_impl);
-	struct context* context = wl_container_of(xdg_wm_base_impl, context, xdg_wm_base_impl);
-	surface->xdg_surface_impl = &context->xdg_shell_impl.xdg_surface_impl;
-	surface->xdg_toplevel_impl = &context->xdg_shell_impl.xdg_toplevel_impl;
+	struct client* new_client = wl_container_of(xdg_wm_base_impl, new_client, xdg_wm_base_impl);
+
+	surface->xdg_surface_impl = &new_client->context->xdg_shell_impl.xdg_surface_impl;
+	surface->xdg_toplevel_impl = &new_client->context->xdg_shell_impl.xdg_toplevel_impl;
 	surface->xdg_surface = create_xdg_surface(client, &surface->xdg_surface_impl, xdg_surface_interface.version, id);
 
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
 }
 
 static void get_toplevel(struct wl_client* client, struct wl_resource* resource, uint32_t id)
@@ -39,7 +38,6 @@ static void get_toplevel(struct wl_client* client, struct wl_resource* resource,
 	struct surface* surface = wl_container_of(xdg_surface_impl, surface, xdg_surface_impl);
 	surface->xdg_toplevel = create_xdg_toplevel(client, &surface->xdg_toplevel_impl, xdg_toplevel_interface.version, id);
 
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
 }
 
 static void get_popup(struct wl_client* client, struct wl_resource* resource, uint32_t id, struct wl_resource* parent, struct wl_resource* positioner)
@@ -48,7 +46,6 @@ static void get_popup(struct wl_client* client, struct wl_resource* resource, ui
 	struct surface* surface = wl_container_of(xdg_surface_impl, surface, xdg_surface_impl);
 	surface->xdg_popup = create_xdg_popup(client, &surface->xdg_popup_impl, xdg_popup_interface.version, id);
 
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
 }
 
 

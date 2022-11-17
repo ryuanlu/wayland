@@ -45,7 +45,7 @@ gen_request_function ()
 	printf ")\n{\n"
 
 	printf "\tstruct ${INTERFACE}_interface** impl = wl_resource_get_user_data(resource);
-
+\tfprintf(stderr, \"%%s: %%s client = %%p, resource = %%p\\\\n\", __FILE__, __PRETTY_FUNCTION__, client, resource);\n
 \tif((*impl)->${REQUEST})
 \t\t(*impl)->${REQUEST}(client, resource${ARGS});\n"
 
@@ -58,7 +58,7 @@ gen_src ()
 	XMLFILE=$1
 	INTERFACE=$2
 	(
-		printf "#include <wayland-server.h>\n"
+		printf "#include <stdio.h>\n#include <wayland-server.h>\n"
 
 		[ "$(basename ${XMLFILE})" != "wayland.xml" ] && printf "#include \"$(basename ${XMLFILE} | cut -d. -f1)-server-protocol.h\"\n"
 

@@ -9,20 +9,16 @@
 static void get_pointer(struct wl_client* client, struct wl_resource* resource, uint32_t id)
 {
 	create_wl_pointer(client, NULL, wl_pointer_interface.version, id);
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
 }
 
 static void get_keyboard(struct wl_client* client, struct wl_resource* resource, uint32_t id)
 {
 	create_wl_keyboard(client, NULL, wl_keyboard_interface.version, id);
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
 }
 
 static void get_touch(struct wl_client* client, struct wl_resource* resource, uint32_t id)
 {
 	create_wl_touch(client, NULL, wl_touch_interface.version, id);
-	fprintf(stderr, "%s\n", __PRETTY_FUNCTION__);
-
 }
 
 void setup_seat_impl(struct context* context)
