@@ -8,14 +8,19 @@ struct client
 	struct context*		context;
 	struct wl_client*	client;
 	struct wl_resource*	seat;
+	struct wl_resource*	output;
+	struct wl_resource*	xdg_output;
 
 	struct wl_listener	destroy;
 
 	struct wl_compositor_interface*			wl_compositor_impl;
 	struct xdg_wm_base_interface*			xdg_wm_base_impl;
+	struct wl_shell_interface*			wl_shell_impl;
 	struct wl_seat_interface*			wl_seat_impl;
 	struct wl_data_device_manager_interface*	wl_data_device_manager_impl;
 	struct wl_output_interface*			wl_output_impl;
+	struct zxdg_output_manager_v1_interface*	xdg_output_manager_impl;
+	struct zxdg_output_v1_interface*		xdg_output_impl;
 	struct wl_region_interface*			wl_region_impl;
 };
 

@@ -3,6 +3,7 @@
 
 #include <wayland-server.h>
 #include "xdg-shell-server-protocol.h"
+#include "xdg-output-unstable-v1-server-protocol.h"
 #include "client.h"
 
 #define MAX_CLIENTS	(128)
@@ -27,6 +28,11 @@ struct xdg_shell_impl
 	struct xdg_popup_interface	xdg_popup_impl;
 };
 
+struct xdg_output_impl
+{
+	struct zxdg_output_manager_v1_interface	xdg_output_manager_impl;
+	struct zxdg_output_v1_interface		xdg_output_impl;
+};
 
 struct context
 {
@@ -35,6 +41,7 @@ struct context
 
 	struct wayland_impl	wayland_impl;
 	struct xdg_shell_impl	xdg_shell_impl;
+	struct xdg_output_impl	xdg_output_impl;
 
 };
 

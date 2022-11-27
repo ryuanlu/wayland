@@ -48,10 +48,24 @@ static void get_popup(struct wl_client* client, struct wl_resource* resource, ui
 
 }
 
+void attach(struct wl_client *client, struct wl_resource *resource, struct wl_resource *buffer, int32_t x, int32_t y)
+{
+
+}
+
+void destroy_surface(struct wl_client *client, struct wl_resource *resource)
+{
+	struct wl_surface_interface** wl_surface_impl = wl_resource_get_user_data(resource);
+	struct surface* surface = wl_container_of(wl_surface_impl, surface, wl_surface_impl);
+
+	fprintf(stderr, "Destroy surface: %p\n", surface->wl_surface);
+}
 
 void setup_surface_impl(struct context* context)
 {
 	context->wayland_impl.wl_compositor_impl.create_surface = create_surface;
+	context->wayland_impl.wl_surface_impl.destroy = destroy_surface;
+
 	context->xdg_shell_impl.xdg_wm_base_impl.get_xdg_surface = get_xdg_surface;
 	context->xdg_shell_impl.xdg_surface_impl.get_toplevel = get_toplevel;
 	context->xdg_shell_impl.xdg_surface_impl.get_popup = get_popup;

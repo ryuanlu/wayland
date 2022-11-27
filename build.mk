@@ -46,17 +46,17 @@ endef
 
 define define_protocol_targets
 
-$(1)-protocol.c: /usr/share/wayland-protocols/stable/$(1)/$(1).xml | $(1)-server-protocol.h
+$(2)-protocol.c: /usr/share/wayland-protocols/$(1)/$(2).xml | $(2)-server-protocol.h
 	@printf "\tWAYLAND_SCANNER\tPRIVATE_CODE\t$$@\t\n"
 	wayland-scanner private-code $$< $$@
 
-$(1)-server-protocol.h: /usr/share/wayland-protocols/stable/$(1)/$(1).xml
+$(2)-server-protocol.h: /usr/share/wayland-protocols/$(1)/$(2).xml
 	@printf "\tWAYLAND_SCANNER\tSERVER_HEADER\t$$@\t\n"
 	wayland-scanner server-header $$< $$@
 
-$(1)_clean:
-	@printf "\tCLEAN\t$(1)\n"
-	rm -f $(1)-protocol.c $(1)-server-protocol.h
+$(2)_clean:
+	@printf "\tCLEAN\t$(2)\n"
+	rm -f $(2)-protocol.c $(2)-server-protocol.h
 endef
 
 
