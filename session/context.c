@@ -8,6 +8,7 @@
 #include "wl_seat.h"
 #include "wl_output.h"
 #include "zxdg_output_manager_v1.h"
+#include "zxdg_output_v1.h"
 #include "xdg-output-unstable-v1-server-protocol.h"
 #include "wl_data_device_manager.h"
 #include "surface.h"
@@ -49,8 +50,8 @@ static void bind_wl_output(struct wl_client* client, void* data, uint32_t versio
 	struct client* new_client = find_client((struct context*)data, client);
 
 	new_client->output = create_wl_output(client, &new_client->wl_output_impl, version, id);
-	wl_output_send_geometry(new_client->output, 0, 0, 530, 300, WL_OUTPUT_SUBPIXEL_UNKNOWN, "DEL", "DELL U2414H", WL_OUTPUT_TRANSFORM_NORMAL);
-	wl_output_send_scale(new_client->output, 1);
+	// wl_output_send_geometry(new_client->output, 0, 0, 530, 300, WL_OUTPUT_SUBPIXEL_UNKNOWN, "DEL", "DELL U2414H", WL_OUTPUT_TRANSFORM_NORMAL);
+	// wl_output_send_scale(new_client->output, 1);
 	wl_output_send_mode(new_client->output, WL_OUTPUT_MODE_CURRENT|WL_OUTPUT_MODE_PREFERRED, 1280, 720, 60000);
 }
 
@@ -70,6 +71,16 @@ static void bind_wl_data_device_manager(struct wl_client* client, void* data, ui
 	struct wl_resource* data_device_manager = create_wl_data_device_manager(client, &new_client->wl_output_impl, version, id);
 }
 
+static void get_xdg_output(struct wl_client *client, struct wl_resource *resource, uint32_t id, struct wl_resource *output)
+{
+	struct wl_resource* xdg_output = create_zxdg_output_v1(client, NULL, zxdg_output_v1_interface.version, id);
+
+	zxdg_output_v1_send_name(xdg_output, "xdg-output");
+	zxdg_output_v1_send_logical_position(xdg_output, 0, 0);
+	zxdg_output_v1_send_logical_size(xdg_output, 1280, 720);
+	zxdg_output_v1_send_done(xdg_output);
+}
+
 struct context* context_create(void)
 {
 	struct context* context = NULL;
@@ -81,12 +92,12 @@ struct context* context_create(void)
 
 	wl_global_create(context->display, &wl_compositor_interface, wl_compositor_interface.version, context, bind_wl_compositor);
 	wl_global_create(context->display, &wl_seat_interface, wl_seat_interface.version, context, bind_wl_seat);
+	// wl_global_create(context->display, &zxdg_output_manager_v1_interface, zxdg_output_manager_v1_interface.version, context, bind_xdg_output_manager);
 	wl_global_create(context->display, &wl_output_interface, wl_output_interface.version, context, bind_wl_output);
-	wl_global_create(context->display, &zxdg_output_manager_v1_interface, zxdg_output_manager_v1_interface.version, context, bind_xdg_output_manager);
 	wl_global_create(context->display, &wl_data_device_manager_interface, wl_data_device_manager_interface.version, context, bind_wl_data_device_manager);
 
 	wl_global_create(context->display, &xdg_wm_base_interface, xdg_wm_base_interface.version, context, bind_xdg_wm_base);
-	wl_global_create(context->display, &wl_shell_interface, wl_shell_interface.version, context, bind_wl_shell);
+	// wl_global_create(context->display, &wl_shell_interface, wl_shell_interface.version, context, bind_wl_shell);
 
 	wl_display_init_shm(context->display);
 	// wl_display_add_shm_format(context->display, WL_SHM_FORMAT_ABGR8888);
@@ -94,6 +105,8 @@ struct context* context_create(void)
 
 	setup_surface_impl(context);
 	setup_seat_impl(context);
+
+	context->xdg_output_impl.xdg_output_manager_impl.get_xdg_output = get_xdg_output;
 
 	return context;
 }

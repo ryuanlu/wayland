@@ -45,7 +45,7 @@ gen_request_function ()
 	printf ")\n{\n"
 
 	printf "\tstruct ${INTERFACE}_interface** impl = wl_resource_get_user_data(resource);
-\t//fprintf(stderr, \"%%s: %%s client = %%p, resource = %%p, id = %%d\\\\n\", __FILE__, __PRETTY_FUNCTION__, client, resource, wl_resource_get_id(resource));\n
+\tfprintf(stderr, \"%%s: %%s client = %%p, resource = %%p, id = %%d\\\\n\", __FILE__, __PRETTY_FUNCTION__, client, resource, wl_resource_get_id(resource));\n
 \tif((*impl)->${REQUEST})
 \t\t(*impl)->${REQUEST}(client, resource${ARGS});\n"
 

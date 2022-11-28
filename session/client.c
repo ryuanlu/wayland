@@ -7,7 +7,7 @@
 
 static enum wl_iterator_result iterator(struct wl_resource* resource, void* data)
 {
-	fprintf(stderr, "%s:%d\n", wl_resource_get_class(resource), wl_resource_get_id(resource));
+	// fprintf(stderr, "%s:%d\n", wl_resource_get_class(resource), wl_resource_get_id(resource));
 	return resource ? WL_ITERATOR_CONTINUE : WL_ITERATOR_STOP;
 }
 
