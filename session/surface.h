@@ -15,6 +15,7 @@ struct surface
 	int	x, y;
 
 	struct wl_surface_interface*	wl_surface_impl;
+	struct wl_region_interface*	wl_region_impl;
 	struct xdg_surface_interface*	xdg_surface_impl;
 	struct xdg_toplevel_interface*	xdg_toplevel_impl;
 	struct xdg_popup_interface*	xdg_popup_impl;

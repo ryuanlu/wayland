@@ -53,6 +53,7 @@ static void bind_wl_output(struct wl_client* client, void* data, uint32_t versio
 	wl_output_send_geometry(new_client->output, 0, 0, 530, 300, WL_OUTPUT_SUBPIXEL_UNKNOWN, "DEL", "DELL U2414H", WL_OUTPUT_TRANSFORM_NORMAL);
 	wl_output_send_scale(new_client->output, 1);
 	wl_output_send_mode(new_client->output, WL_OUTPUT_MODE_CURRENT|WL_OUTPUT_MODE_PREFERRED, 1280, 720, 60000);
+	wl_output_send_done(new_client->output);
 }
 
 
@@ -84,7 +85,23 @@ static void get_xdg_output(struct wl_client *client, struct wl_resource *resourc
 
 static void logger(void *user_data, enum wl_protocol_logger_type direction, const struct wl_protocol_logger_message *message)
 {
-	// fprintf(stderr, "%s\n", message->message->name);
+	static struct wl_client* client = NULL;
+	int i;
+
+	if(!client)
+		client = message->resource->client;
+
+	if(client == message->resource->client)
+	{
+		fprintf(stderr, "[%016p] %s(%d)::%s(", message->resource->client, wl_resource_get_class(message->resource), wl_resource_get_id(message->resource), message->message->name);
+		for(i = 0;i<message->arguments_count;++i)
+		{
+			fprintf(stderr, "%d", message->arguments[i].i);
+			if(i != message->arguments_count - 1)
+				fprintf(stderr, ", ");
+		}
+		fprintf(stderr, ")\n");
+	}
 }
 
 struct context* context_create(void)

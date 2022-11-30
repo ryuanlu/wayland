@@ -6,6 +6,7 @@
 #include "xdg_toplevel.h"
 #include "xdg_popup.h"
 #include "surface.h"
+#include "wl_region.h"
 #include "client.h"
 
 
@@ -16,7 +17,15 @@ static void create_surface(struct wl_client* client, struct wl_resource* resourc
 	struct client* new_client = wl_container_of(wl_compositor_impl, new_client, wl_compositor_impl);
 	surface->wl_surface_impl = &new_client->context->wayland_impl.wl_surface_impl;
 	surface->wl_surface = create_wl_surface(client, &surface->wl_surface_impl, wl_surface_interface.version, id);
-	fprintf(stderr, "New surface: %p\n", surface->wl_surface);
+}
+
+static void create_region(struct wl_client* client, struct wl_resource* resource, uint32_t id)
+{
+	struct wl_compositor_interface** wl_compositor_impl = wl_resource_get_user_data(resource);
+	struct surface* surface = calloc(sizeof(struct surface), 1);
+	struct client* new_client = wl_container_of(wl_compositor_impl, new_client, wl_compositor_impl);
+	surface->wl_region_impl = &new_client->context->wayland_impl.wl_region_impl;
+	create_wl_region(client, &surface->wl_region_impl, wl_region_interface.version, id);
 }
 
 static void get_xdg_surface(struct wl_client* client, struct wl_resource* resource, uint32_t id, struct wl_resource* wl_surface)
@@ -57,8 +66,6 @@ static void destroy_surface(struct wl_client *client, struct wl_resource *resour
 {
 	struct wl_surface_interface** wl_surface_impl = wl_resource_get_user_data(resource);
 	struct surface* surface = wl_container_of(wl_surface_impl, surface, wl_surface_impl);
-
-	fprintf(stderr, "Destroy surface: %p\n", surface->wl_surface);
 }
 
 static void commit(struct wl_client *client, struct wl_resource *resource)
@@ -83,7 +90,9 @@ static void ack_configure(struct wl_client *client, struct wl_resource *resource
 void setup_surface_impl(struct context* context)
 {
 	context->wayland_impl.wl_compositor_impl.create_surface = create_surface;
+	context->wayland_impl.wl_compositor_impl.create_region = create_region;
 	context->wayland_impl.wl_surface_impl.destroy = destroy_surface;
+	context->wayland_impl.wl_surface_impl.attach = attach;
 	context->wayland_impl.wl_surface_impl.commit = commit;
 
 	context->xdg_shell_impl.xdg_wm_base_impl.get_xdg_surface = get_xdg_surface;
