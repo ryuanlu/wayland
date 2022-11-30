@@ -48,12 +48,12 @@ static void get_popup(struct wl_client* client, struct wl_resource* resource, ui
 
 }
 
-void attach(struct wl_client *client, struct wl_resource *resource, struct wl_resource *buffer, int32_t x, int32_t y)
+static void attach(struct wl_client *client, struct wl_resource *resource, struct wl_resource *buffer, int32_t x, int32_t y)
 {
 
 }
 
-void destroy_surface(struct wl_client *client, struct wl_resource *resource)
+static void destroy_surface(struct wl_client *client, struct wl_resource *resource)
 {
 	struct wl_surface_interface** wl_surface_impl = wl_resource_get_user_data(resource);
 	struct surface* surface = wl_container_of(wl_surface_impl, surface, wl_surface_impl);
@@ -61,12 +61,33 @@ void destroy_surface(struct wl_client *client, struct wl_resource *resource)
 	fprintf(stderr, "Destroy surface: %p\n", surface->wl_surface);
 }
 
+static void commit(struct wl_client *client, struct wl_resource *resource)
+{
+	struct wl_surface_interface** wl_surface_impl = wl_resource_get_user_data(resource);
+	struct surface* surface = wl_container_of(wl_surface_impl, surface, wl_surface_impl);
+
+	struct wl_array array;
+	wl_array_init(&array);
+	int32_t *states = wl_array_add (&array, sizeof(int32_t));
+	states[0] = XDG_TOPLEVEL_STATE_ACTIVATED;
+	xdg_toplevel_send_configure(surface->xdg_toplevel, 1280, 720, &array);
+	xdg_surface_send_configure(surface->xdg_surface, 0);
+}
+
+
+static void ack_configure(struct wl_client *client, struct wl_resource *resource, uint32_t serial)
+{
+
+}
+
 void setup_surface_impl(struct context* context)
 {
 	context->wayland_impl.wl_compositor_impl.create_surface = create_surface;
 	context->wayland_impl.wl_surface_impl.destroy = destroy_surface;
+	context->wayland_impl.wl_surface_impl.commit = commit;
 
 	context->xdg_shell_impl.xdg_wm_base_impl.get_xdg_surface = get_xdg_surface;
 	context->xdg_shell_impl.xdg_surface_impl.get_toplevel = get_toplevel;
 	context->xdg_shell_impl.xdg_surface_impl.get_popup = get_popup;
+	context->xdg_shell_impl.xdg_surface_impl.ack_configure = ack_configure;
 }
